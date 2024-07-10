@@ -2,11 +2,16 @@ Welcome to Zurich Customer Portal
 
 Please create OAuth Google and don't add .env file while working on this project
 
+
+
 .env
 GOOGLE_CLIENT_ID=""
 GOOGLE_CLIENT_SECRET=""
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=secret
+
+
+
 
 ScreenShot
 
