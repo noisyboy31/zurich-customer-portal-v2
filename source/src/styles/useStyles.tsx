@@ -17,23 +17,6 @@ export const DetailsStyled = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1),
 }));
 
-export const BoxStyled = styled(Box)(({ theme }) => ({
-  width: '100%',
-  position: 'fixed',
-  backgroundColor: 'primary.main',
-  color: 'primary.contrastText',
-  padding: (theme) => theme.spacing(3, 0),
-  marginTop: 'auto',
-}));
-
-export const ContainerStyled = styled(Container)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: (theme) => theme.spacing(8),
-  padding: (theme) => theme.spacing(2),
-}));
-
 export const ToolbarStyled = styled(Toolbar)(({ theme }) => ({
   justifyContent: 'space-between',
 }));

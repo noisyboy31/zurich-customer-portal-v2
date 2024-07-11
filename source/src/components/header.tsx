@@ -11,11 +11,11 @@ const Header = () => {
 
   return (
     <AppBar position="static">
-      <ToolbarStyled>
+      <ToolbarStyled data-testid="header-component">
         <Typography variant="h6" sx={title}>
             Zurich Customer Portal
         </Typography>
-        <IconButton color="inherit" onClick={() => signOut()}>
+        <IconButton color="inherit" data-testid="sign-out-button" onClick={() => signOut()}>
             <FontAwesomeIcon icon={faArrowRightFromBracket} />
         </IconButton>
       </ToolbarStyled>
