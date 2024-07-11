@@ -1,7 +1,8 @@
-import CustomerMembership from '../../components/customerMembership';
+
 import { IPurchaseMembershipsApi, TCustomerMembership } from '../../typeModule';
 import { Container, Box, List, ListItem } from '@mui/material';
 import axios from 'axios'
+import CustomerMembership from '../../components/customerMembership';
 
 const maskEmail = async (email: string): Promise<string> => {
   "use server"

@@ -10,15 +10,14 @@ const CustomerMembership = ({ id, email, first_name, last_name, avatar, maskEmai
   const [maskedEmail, setMaskedEmail] = useState<string>('');
   const handleToggleMask = () => setMasked(!masked);
 
-  const latestMaskedEmail = async () => {
-    if (masked) {
-      const maskedEmail = await maskEmail(email);
-      setMaskedEmail(maskedEmail);
-    }
-    setMaskedEmail(email);
-  };
-
   useEffect(() => {
+    const latestMaskedEmail = async () => {
+      if (masked) {
+        const maskedEmail = await maskEmail(email);
+        setMaskedEmail(maskedEmail);
+      }
+      setMaskedEmail(email);
+    };
     latestMaskedEmail();
   }, [masked, email, maskEmail]);
 

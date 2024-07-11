@@ -7,7 +7,7 @@ const Footer = () => {
   const date: Moment = moment();
 
   return (
-    <StyledFooter>
+    <StyledFooter data-testid="footer-component">
       <StyledBox>
         <Typography variant="h6" >
           &copy; {date.format('DD MMM YYYY, h:mm:ss a')} Zurich Insurance Group Ltd. All rights reserved.

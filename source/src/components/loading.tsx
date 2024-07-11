@@ -4,7 +4,7 @@ import { FullScreenContainer } from '../styles/useStyles';
 
 const LoadingComponent = () => {
   return (
-    <FullScreenContainer>
+    <FullScreenContainer data-testid="full-screen-container">
       <CircularProgress />
     </FullScreenContainer>
   )
