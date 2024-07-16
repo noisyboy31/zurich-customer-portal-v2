@@ -18,7 +18,7 @@ export interface IPurchaseMembershipsApi {
   support: TSupport
   total: number,
   total_pages: number,
-  pageNumber: number,
-  per_pageNumber: number,
+  page: number,
+  per_page: number,
   data: TCustomerMembership[]
 }

@@ -49,3 +49,7 @@ export const StyledFooter = styled('footer')({
   left: '0px'
 });
 
+export const StyledButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.mode === 'dark' ? 'dark' : 'gray',
+  padding: theme.spacing(2),
+}));

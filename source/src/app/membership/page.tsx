@@ -1,78 +1,52 @@
 
-import { IPurchaseMembershipsApi, TCustomerMembership } from '../../typeModule';
-import { Container, Box, List, ListItem } from '@mui/material';
-import axios from 'axios'
+"use client";
+import * as React from 'react';
+import { Container, Box, List, ListItem, Typography } from '@mui/material';
 import CustomerMembership from '../../components/customerMembership';
+import { maskEmail } from '../api/membershipApi';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchMemberships, setPage } from '../redux/actions/userActions';
+import { RootState, AppDispatch } from '../redux/store';
+import { TCustomerMembership } from '../../typeModule';
+import { StyledButton } from '../../styles/useStyles';
 
-const maskEmail = async (email: string): Promise<string> => {
-  "use server"
-  return email.replace(/./g, '*');
-}
+const Membership = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const memberships = useSelector((state: RootState) => state?.users?.memberships || []);
+  const loading = useSelector((state: RootState) => state?.users?.loading);
+  const error = useSelector((state: RootState) => state?.users?.error);
+  const totalPages = useSelector((state: RootState) => state.users.total_pages);
+  const page = useSelector((state: RootState) => state?.users?.page); 
 
-const getPurchaseMembershipsApi = async (pageNumber: number = 1) => {
-  const url: string = `https://reqres.in/api/users?page=${pageNumber}`
+  React.useEffect(() => {
+    dispatch(fetchMemberships(page));
+  }, [page, dispatch]);
 
-  try {
-    const response = await axios.get<IPurchaseMembershipsApi>(url);
-    const res = response?.data || null;
-    return res; 
-  } catch (error) {
-    console.error('Error fetching membership:', error);
-    throw error;
-  }
-}
-
-const getBalancePages = async (pageNumber: number, total_pages: number, data: TCustomerMembership[]): Promise<TCustomerMembership[]> => {
-  const pagination: Promise<IPurchaseMembershipsApi>[] = [];
-
-  for (let i = pageNumber + 1; i <= total_pages; i++) {
-    pagination.push(getPurchaseMembershipsApi(i));
-  }
-
-  await Promise.all(pagination)
-    .then((responses) => {
-      responses.forEach((res) => {
-        data.push(...res.data);
-      });
-    })
-    .catch((error) => {
-      console.error('Error fetching balancePages:', error);
-      throw new Error(error);
-    });
-
-  return data;
-}
-
-const getFlatMemberships = (data: TCustomerMembership[]): TCustomerMembership[] => data.filter(member => /^G/.test(member.first_name) || /^W/.test(member.last_name));
-
-const getMemberships = async (): Promise<TCustomerMembership[]> => {
-  try {
-    const { pageNumber, total_pages, data } = await getPurchaseMembershipsApi();
-    await getBalancePages(pageNumber, total_pages, data);
-    
-    const membership = getFlatMemberships(data);
-    return membership;
-
-  } catch (error) {
-    console.error('Error fetching memberships:', error);
-    throw error; 
-  }
-}
-
-const Membership = async () => {
-  const renderMemberships = await getMemberships();
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      dispatch(setPage(newPage));
+      dispatch(fetchMemberships(newPage));
+    }
+  };
 
   return (
     <Container sx={{ p: 4, mb: 16 }}>
-      <List>
-        {renderMemberships?.map((renderMembership) => (
-          <ListItem key={renderMembership?.id}>
-            <CustomerMembership {...renderMembership} maskEmail={maskEmail} />
-          </ListItem>
-        ))}
-      </List>
+      <Box>
+        <List sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'space-evenly'}}>
+          {memberships?.map((membership: TCustomerMembership) => (
+            <ListItem key={membership?.id} sx={{ flex: '0 0 auto', maxWidth: '310px' }}>
+              <CustomerMembership {...membership} />
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+      <Box className="flex items-center justify-between mt-10">
+        <StyledButton onClick={() => handlePageChange(page - 1)} disabled={page === 1}>Previous</StyledButton>
+        <Typography className="text-gray-800"> Page {page} of {totalPages}</Typography>
+        <StyledButton onClick={() => handlePageChange(page + 1)} disabled={page === totalPages}>Next</StyledButton>
+      </Box>
     </Container>
   );
 }
 
-export default Membership
+export default Membership;
