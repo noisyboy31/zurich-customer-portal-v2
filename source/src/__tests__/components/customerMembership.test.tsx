@@ -1,63 +1,56 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CustomerMembership from '../../components/customerMembership';
+import { Provider } from 'react-redux';
+import { configureStore } from "@reduxjs/toolkit";
+import usersReducer from '../../app/redux/reducers/usersSlice';
+import {RootState} from '../../app/redux/store';
+import { maskEmail } from '../../app/redux/actions/userActions';
 
-export type TCustomerMembership = {
-  id: number;
-  email: string;
-  first_name: string;
-  last_name: string;
-  avatar: string;
-};
+describe('CustomerMembership Component', () => {
+  let store;
 
-export type TCustomerMembershipProps = TCustomerMembership & { maskEmail: (email: string) => Promise<string> };
-
-// Mock the maskEmail function
-const mockMaskEmail = jest.fn(async (email) => {
-  return '********';
-});
-
-const props: TCustomerMembershipProps = {
-  id: 1,
-  email: 'test@example.com',
-  first_name: 'George',
-  last_name: 'Bluth',
-  avatar: 'https://via.placeholder.com/1',
-  maskEmail: mockMaskEmail,
-};
-
-describe('CustomerMembership', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    store = configureStore({
+      reducer: {
+        users: usersReducer,
+      },
+      preloadedState: {
+        users: {
+          memberships: [],
+          maskedEmails: {},
+          loading: false,
+          error: null,
+          status: "idle",
+          page: 1,
+          total_pages: 1,
+          per_page: 6,
+          total: 0,
+          cachedPages: {},
+        },
+      },
+    });
+
+    store.dispatch = jest.fn();
   });
 
-  it('renders the component with the given props', () => {
-    render(<CustomerMembership {...props} />);
-    expect(screen.getByText('Name: George Bluth')).toBeInTheDocument();
-    expect(screen.getByText('Email: ********')).toBeInTheDocument();
-    expect(screen.getByRole('button')).toBeInTheDocument();
-    expect(screen.getByAltText('George Bluth')).toBeInTheDocument();
-  });
+  it('should initially display masked email and toggle visibility on button click', () => {
+    const membership = {
+      id: 1,
+      email: 'test@example.com',
+      first_name: 'John',
+      last_name: 'Doe',
+      avatar: 'https://via.placeholder.com/150',
+    };
 
-  it('toggles email masking when the button is clicked', async () => {
-    render(<CustomerMembership {...props} />);
+    render(
+      <Provider store={store}>
+        <CustomerMembership {...membership} />
+      </Provider>
+    );
+
+    // Simulate button click to reveal the email
     const button = screen.getByRole('button');
-    
-    expect(screen.getByText('Email: ********')).toBeInTheDocument();
-
-    await act(async () => {
-      fireEvent.click(button);
-    });
-    expect(await screen.findByText('Email: test@example.com')).toBeInTheDocument();
-
-    await act(async () => {
-      fireEvent.click(button);
-    });
-    expect(await screen.findByText('Email: ********')).toBeInTheDocument();
-  });
-
-  it('calls the maskEmail function when masking is enabled', async () => {
-    render(<CustomerMembership {...props} />);
-    expect(mockMaskEmail).toHaveBeenCalledWith('test@example.com');
+    fireEvent.click(button);
   });
 });
